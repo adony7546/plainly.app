@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plainly: store report tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0f2a2c; --soft:#3d5557; --paper:#f1f5f1; --white:#fff; --line:#d5dfd8;
+    --alert:#c93a26; --alert-bg:#fbe9e5; --good:#23704f; --good-bg:#dff1e7; --warn:#8a6100; --warn-bg:#fbf1d4;
+    --accent:#0f5f55; --accent-dark:#0a443d;
+    --serif:"Newsreader",Georgia,serif; --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 80px}
+  header{padding:28px 0 8px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .logo{font:500 1.6rem var(--serif)}
+  h1,h2{font-family:var(--serif);font-weight:500;margin:0;line-height:1.15}
+  h1{font-size:2rem;margin-top:8px}
+  h2{font-size:1.4rem}
+  .sub{color:var(--soft);margin:8px 0 0;max-width:40rem}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:22px;margin-top:20px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  fieldset{border:0;margin:0;padding:0}
+  legend{font-weight:600;margin-bottom:10px;padding:0}
+  label{display:block;font-size:.88rem;font-weight:500;margin:10px 0 4px}
+  input{width:100%;font:inherit;padding:10px 12px;border:1px solid #b7c6bd;border-radius:8px;background:#fff;color:var(--ink)}
+  input:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .hint{font-size:.82rem;color:var(--soft);margin-top:4px}
+  .optional{margin-top:16px;border-top:1px dashed var(--line);padding-top:6px}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px 20px;font:600 1rem var(--sans);cursor:pointer}
+  .btn:hover{background:var(--accent-dark)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .btn-ghost:hover{background:var(--paper)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px}
+  .code-row{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+  .code-row > div{flex:1;min-width:220px}
+  table{width:100%;border-collapse:collapse;font-size:.95rem}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  th{font-weight:600;color:var(--soft);font-size:.85rem}
+  .down{color:var(--alert);font-weight:600}.up{color:var(--good);font-weight:600}
+  .tag{display:inline-block;font-size:.76rem;font-weight:600;padding:2px 8px;border-radius:99px}
+  .tag.real{background:var(--good-bg);color:var(--good)}
+  .tag.noise{background:var(--warn-bg);color:var(--warn)}
+  .tag.na{background:var(--paper);color:var(--soft)}
+  .err{color:var(--alert);margin-top:10px;font-size:.92rem;min-height:1.2em}
+  .chat{display:grid;gap:12px;margin-top:6px}
+  .msg{padding:14px 16px;border-radius:12px;max-width:100%}
+  .msg.ai{background:var(--paper);border:1px solid var(--line)}
+  .msg.me{background:var(--accent);color:#fff;justify-self:end;max-width:85%}
+  .msg p{margin:0 0 8px}.msg p:last-child{margin:0}
+  .msg ul{margin:6px 0 8px;padding-left:20px}
+  .typing{color:var(--soft);font-style:italic}
+  .ask{display:flex;gap:10px;margin-top:14px}
+  .ask input{flex:1}
+  .notice{font-size:.85rem;color:var(--soft);margin-top:14px}
+  .hidden{display:none}
+  @media (max-width:760px){.grid2{grid-template-columns:1fr}.ask{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><span class="logo">Plainly</span></header>
+  <h1>Turn a store's numbers into a plain-English report</h1>
+  <p class="sub">Enter this week's and last week's numbers. The tool does the math, checks whether the changes are meaningful or just normal ups and downs, then the AI explains it and answers your questions.</p>
+
+  <div class="card">
+    <div class="code-row">
+      <div>
+        <label for="code" style="margin-top:0">Access code</label>
+        <input id="code" type="password" autocomplete="off" placeholder="The code you set in Vercel">
+      </div>
+      <button class="btn btn-ghost" type="button" id="sampleBtn">Fill in sample data</button>
+    </div>
+  </div>
+
+  <form id="form" class="card" novalidate>
+    <div class="grid2">
+      <fieldset>
+        <legend>This week</legend>
+        <label for="tw_sales">Sales ($)</label><input id="tw_sales" type="number" min="0" step="any" inputmode="decimal">
+        <label for="tw_orders">Orders</label><input id="tw_orders" type="number" min="0" step="1" inputmode="numeric">
+        <label for="tw_visitors">Visitors (sessions)</label><input id="tw_visitors" type="number" min="1" step="1" inputmode="numeric">
+        <label for="tw_atc">Add-to-cart rate (%) <span class="hint">optional</span></label><input id="tw_atc" type="number" min="0" max="100" step="any" inputmode="decimal">
+        <div class="optional">
+          <div class="hint">Optional: split by device to find where a change happened</div>
+          <label for="tw_mv">Mobile visitors</label><input id="tw_mv" type="number" min="0" step="1" inputmode="numeric">
+          <label for="tw_mo">Mobile orders</label><input id="tw_mo" type="number" min="0" step="1" inputmode="numeric">
+          <label for="tw_dv">Desktop visitors</label><input id="tw_dv" type="number" min="0" step="1" inputmode="numeric">
+          <label for="tw_do">Desktop orders</label><input id="tw_do" type="number" min="0" step="1" inputmode="numeric">
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Last week</legend>
+        <label for="lw_sales">Sales ($)</label><input id="lw_sales" type="number" min="0" step="any" inputmode="decimal">
+        <label for="lw_orders">Orders</label><input id="lw_orders" type="number" min="0" step="1" inputmode="numeric">
+        <label for="lw_visitors">Visitors (sessions)</label><input id="lw_visitors" type="number" min="1" step="1" inputmode="numeric">
+        <label for="lw_atc">Add-to-cart rate (%) <span class="hint">optional</span></label><input id="lw_atc" type="number" min="0" max="100" step="any" inputmode="decimal">
+        <div class="optional">
+          <div class="hint">Optional: same device split for last week</div>
+          <label for="lw_mv">Mobile visitors</label><input id="lw_mv" type="number" min="0" step="1" inputmode="numeric">
+          <label for="lw_mo">Mobile orders</label><input id="lw_mo" type="number" min="0" step="1" inputmode="numeric">
+          <label for="lw_dv">Desktop visitors</label><input id="lw_dv" type="number" min="0" step="1" inputmode="numeric">
+          <label for="lw_do">Desktop orders</label><input id="lw_do" type="number" min="0" step="1" inputmode="numeric">
+        </div>
+      </fieldset>
+    </div>
+    <label for="context">Anything the owner says changed this week? <span class="hint">optional (new ad campaign, sale, theme update...)</span></label>
+    <input id="context" type="text" maxlength="400" placeholder="e.g. Started a TikTok ad campaign on Tuesday">
+    <div class="row">
+      <button class="btn" type="submit" id="goBtn">Explain these numbers</button>
+    </div>
+    <div class="err" id="formErr" role="alert"></div>
+    <p class="notice">Only enter totals. Never paste customer names, emails, or addresses.</p>
+  </form>
+
+  <section id="results" class="card hidden" aria-live="polite">
+    <h2>What the numbers say</h2>
+    <div style="overflow-x:auto;margin-top:12px"><table id="table"></table></div>
+    <h2 style="margin-top:28px">Report</h2>
+    <div class="chat" id="chat"></div>
+    <form class="ask" id="askForm">
+      <input id="question" type="text" maxlength="500" placeholder="Ask a follow-up, e.g. Should I worry about mobile?" aria-label="Ask a follow-up question">
+      <button class="btn" type="submit" id="askBtn">Ask</button>
+    </form>
+    <div class="err" id="chatErr" role="alert"></div>
+    <p class="notice">AI can make mistakes. Check the numbers and treat explanations as leads to investigate, not confirmed causes.</p>
+  </section>
+</div>
+
+<script>
+var $ = function (id) { return document.getElementById(id); };
+var chatHistory = [];
+var busy = false;
+
+try { $('code').value = localStorage.getItem('plainly_code') || ''; } catch (e) {}
+
+var FIELDS = ['sales','orders','visitors','atc','mv','mo','dv','do'];
+
+function num(id) {
+  var v = $(id).value.trim();
+  if (v === '') return null;
+  var n = Number(v);
+  return isFinite(n) && n >= 0 ? n : NaN;
+}
+function readPeriod(p) {
+  var o = {};
+  FIELDS.forEach(function (f) { o[f] = num(p + '_' + f); });
+  return o;
+}
+function pct(a, b) { return b ? ((a - b) / b) * 100 : null; }
+function fmtPct(x) { return x === null ? 'n/a' : (x > 0 ? '+' : '') + x.toFixed(1) + '%'; }
+function money(x) { return '$' + Math.round(x).toLocaleString('en-US'); }
+function cls(x, goodIsUp) {
+  if (x === null || Math.abs(x) < 0.05) return '';
+  return (x > 0) === goodIsUp ? 'up' : 'down';
+}
+
+// Two-proportion z-test: is the change in conversion rate bigger than random noise?
+function convSignal(o1, v1, o0, v0) {
+  if (!v1 || !v0) return { label: 'n/a', kind: 'na' };
+  var p1 = o1 / v1, p0 = o0 / v0, pp = (o1 + o0) / (v1 + v0);
+  var se = Math.sqrt(pp * (1 - pp) * (1 / v1 + 1 / v0));
+  if (!se) return { label: 'n/a', kind: 'na' };
+  var z = Math.abs((p1 - p0) / se);
+  if (z >= 1.96) return { label: 'Likely a real change', kind: 'real' };
+  return { label: 'Could be normal ups and downs', kind: 'noise' };
+}
+
+function validate(t, l) {
+  var req = ['sales', 'orders', 'visitors'];
+  for (var i = 0; i < req.length; i++) {
+    if (t[req[i]] === null || l[req[i]] === null) return 'Please fill in sales, orders, and visitors for both weeks.';
+    if (isNaN(t[req[i]]) || isNaN(l[req[i]])) return 'Numbers must be zero or higher.';
+  }
+  if (t.visitors < 1 || l.visitors < 1) return 'Visitors must be at least 1.';
+  if (t.orders > t.visitors || l.orders > l.visitors) return 'Orders cannot be higher than visitors. Check the numbers.';
+  var dev = [['mv','mo'],['dv','do']];
+  for (var j = 0; j < dev.length; j++) {
+    var a = dev[j][0], b = dev[j][1];
+    if ((t[b] !== null && t[a] !== null && t[b] > t[a]) || (l[b] !== null && l[a] !== null && l[b] > l[a])) {
+      return 'Device orders cannot be higher than device visitors.';
+    }
+  }
+  return '';
+}
+
+function compute(t, l) {
+  var rows = [];
+  var tConv = t.orders / t.visitors * 100, lConv = l.orders / l.visitors * 100;
+  var tAov = t.orders ? t.sales / t.orders : null, lAov = l.orders ? l.sales / l.orders : null;
+  var sig = convSignal(t.orders, t.visitors, l.orders, l.visitors);
+
+  rows.push({ m: 'Sales', a: money(l.sales), b: money(t.sales), d: pct(t.sales, l.sales), up: true });
+  rows.push({ m: 'Visitors', a: l.visitors.toLocaleString('en-US'), b: t.visitors.toLocaleString('en-US'), d: pct(t.visitors, l.visitors), up: true });
+  rows.push({ m: 'Orders', a: String(l.orders), b: String(t.orders), d: pct(t.orders, l.orders), up: true });
+  rows.push({ m: 'Conversion rate', a: lConv.toFixed(2) + '%', b: tConv.toFixed(2) + '%', d: pct(tConv, lConv), up: true, sig: sig });
+  if (tAov !== null && lAov !== null) rows.push({ m: 'Average order value', a: money(lAov), b: money(tAov), d: pct(tAov, lAov), up: true });
+  if (t.atc !== null && l.atc !== null) rows.push({ m: 'Add-to-cart rate', a: l.atc.toFixed(1) + '%', b: t.atc.toFixed(1) + '%', d: pct(t.atc, l.atc), up: true });
+
+  [['Mobile', 'mv', 'mo'], ['Desktop', 'dv', 'do']].forEach(function (d) {
+    var v = d[1], o = d[2];
+    if (t[v] && l[v] && t[o] !== null && l[o] !== null) {
+      var tc = t[o] / t[v] * 100, lc = l[o] / l[v] * 100;
+      rows.push({ m: d[0] + ' conversion', a: lc.toFixed(2) + '%', b: tc.toFixed(2) + '%', d: pct(tc, lc), up: true, sig: convSignal(t[o], t[v], l[o], l[v]) });
+    }
+  });
+  return rows;
+}
+
+function renderTable(rows) {
+  var h = '<tr><th>Metric</th><th>Last week</th><th>This week</th><th>Change</th><th>Meaningful?</th></tr>';
+  rows.forEach(function (r) {
+    h += '<tr><td>' + r.m + '</td><td>' + r.a + '</td><td>' + r.b + '</td><td class="' + cls(r.d, r.up) + '">' + fmtPct(r.d) + '</td><td>' +
+      (r.sig ? '<span class="tag ' + r.sig.kind + '">' + r.sig.label + '</span>' : '') + '</td></tr>';
+  });
+  $('table').innerHTML = h;
+}
+
+function summaryText(rows, t, l, ctx) {
+  var s = 'Weekly store numbers (calculated by code, so the math is reliable). Compare this week with last week.\n';
+  rows.forEach(function (r) {
+    s += '- ' + r.m + ': last week ' + r.a + ' -> this week ' + r.b + ' (' + fmtPct(r.d) + ')' + (r.sig ? ' [' + r.sig.label + ']' : '') + '\n';
+  });
+  s += '\nVolume: this week ' + t.visitors + ' visitors and ' + t.orders + ' orders; last week ' + l.visitors + ' visitors and ' + l.orders + ' orders.\n';
+  if (ctx) s += 'Owner says this changed: ' + ctx + '\n';
+  s += '\nWrite the weekly report now.';
+  return s;
+}
+
+// Minimal, safe formatting for AI replies
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function fmt(text) {
+  var lines = esc(text).split('\n'), out = '', inList = false;
+  lines.forEach(function (ln) {
+    var li = ln.match(/^\s*(?:[-*]|\d+\.)\s+(.*)/);
+    var bold = function (x) { return x.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); };
+    if (li) { if (!inList) { out += '<ul>'; inList = true; } out += '<li>' + bold(li[1]) + '</li>'; }
+    else {
+      if (inList) { out += '</ul>'; inList = false; }
+      if (ln.trim()) out += '<p>' + bold(ln) + '</p>';
+    }
+  });
+  if (inList) out += '</ul>';
+  return out;
+}
+
+function addMsg(kind, html, id) {
+  var d = document.createElement('div');
+  d.className = 'msg ' + kind;
+  if (id) d.id = id;
+  d.innerHTML = html;
+  $('chat').appendChild(d);
+  d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  return d;
+}
+
+function setBusy(b) {
+  busy = b;
+  $('goBtn').disabled = b; $('askBtn').disabled = b;
+}
+
+async function callAI() {
+  var code = $('code').value;
+  if (!code) { return 'Enter your access code at the top first.'; }
+  try { localStorage.setItem('plainly_code', code); } catch (e) {}
+  var typing = addMsg('ai', '<span class="typing">Thinking...</span>', 'typing');
+  setBusy(true);
+  try {
+    var r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-access-code': code },
+      body: JSON.stringify({ messages: chatHistory.slice(-12) })
+    });
+    var data = {};
+    try { data = await r.json(); } catch (e) {}
+    typing.remove();
+    if (!r.ok) { return data.error || 'Something went wrong. Please try again.'; }
+    chatHistory.push({ role: 'assistant', text: data.reply });
+    addMsg('ai', fmt(data.reply));
+    return '';
+  } catch (e) {
+    typing.remove();
+    return "Couldn't reach the server. Check your connection and try again.";
+  } finally {
+    setBusy(false);
+  }
+}
+
+$('form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  if (busy) return;
+  $('formErr').textContent = ''; $('chatErr').textContent = '';
+  var t = readPeriod('tw'), l = readPeriod('lw');
+  var problem = validate(t, l);
+  if (problem) { $('formErr').textContent = problem; return; }
+
+  var rows = compute(t, l);
+  renderTable(rows);
+  $('chat').innerHTML = '';
+  chatHistory = [{ role: 'user', text: summaryText(rows, t, l, $('context').value.trim()) }];
+  $('results').classList.remove('hidden');
+  $('results').scrollIntoView({ behavior: 'smooth' });
+  var err = await callAI();
+  if (err) { $('chatErr').textContent = err; chatHistory = []; }
+});
+
+$('askForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  if (busy) return;
+  $('chatErr').textContent = '';
+  var q = $('question').value.trim();
+  if (!q) return;
+  if (!chatHistory.length) { $('chatErr').textContent = 'Generate a report first.'; return; }
+  chatHistory.push({ role: 'user', text: q });
+  addMsg('me', esc(q));
+  $('question').value = '';
+  var err = await callAI();
+  if (err) { $('chatErr').textContent = err; chatHistory.pop(); }
+});
+
+$('sampleBtn').addEventListener('click', function () {
+  var tw = { sales: 12540, orders: 282, visitors: 14820, atc: 6.4, mv: 12100, mo: 170, dv: 2720, 'do': 112 };
+  var lw = { sales: 14250, orders: 307, visitors: 10980, atc: 7.9, mv: 8100, mo: 189, dv: 2880, 'do': 118 };
+  Object.keys(tw).forEach(function (k) { $('tw_' + k).value = tw[k]; });
+  Object.keys(lw).forEach(function (k) { $('lw_' + k).value = lw[k]; });
+});
+</script>
+</body>
+</html>
