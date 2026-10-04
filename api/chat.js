@@ -1,9 +1,11 @@
 // Vercel serverless function. Keeps your AI key private on the server.
+// Uses OpenRouter, which has free models (IDs ending in ":free").
 // Required environment variables (set in Vercel > Settings > Environment Variables):
-//   GEMINI_API_KEY  - your key from https://aistudio.google.com/apikey
-//   ACCESS_CODE     - a password you choose, so only people you trust can use the tool
+//   OPENROUTER_API_KEY - your key from https://openrouter.ai/keys
+//   ACCESS_CODE        - a password you choose, so only people you trust can use the tool
 // Optional:
-//   GEMINI_MODEL    - defaults to gemini-2.5-flash
+//   OPENROUTER_MODEL   - defaults to "openrouter/free" (OpenRouter picks a currently free model).
+//                        To pin one, copy a model ID ending in ":free" from https://openrouter.ai/models
 
 const SYSTEM_PROMPT = `You are an analytics explainer for small online store owners who are not data analysts. You receive a store's numbers (already calculated) and write a plain-English weekly report, then answer follow-up questions.
 
@@ -32,10 +34,10 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed.' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
   const accessCode = process.env.ACCESS_CODE;
   if (!apiKey || !accessCode) {
-    return res.status(500).json({ error: 'Server is not set up yet: add GEMINI_API_KEY and ACCESS_CODE in Vercel settings.' });
+    return res.status(500).json({ error: 'Server is not set up yet: add OPENROUTER_API_KEY and ACCESS_CODE in Vercel settings.' });
   }
 
   if ((req.headers['x-access-code'] || '') !== accessCode) {
@@ -48,44 +50,50 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid request.' });
   }
 
-  const contents = [];
+  const chat = [{ role: 'system', content: SYSTEM_PROMPT }];
   for (const m of messages) {
     if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.text !== 'string' || m.text.length > 6000) {
       return res.status(400).json({ error: 'Invalid message.' });
     }
-    contents.push({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.text }] });
+    chat.push({ role: m.role, content: m.text });
   }
 
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent';
+  const model = process.env.OPENROUTER_MODEL || 'openrouter/free';
 
   try {
-    const r = await fetch(url, {
+    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey,
+        'X-Title': 'Plainly'
+      },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents,
-        generationConfig: { temperature: 0.4, maxOutputTokens: 1500 }
+        model,
+        messages: chat,
+        temperature: 0.4,
+        max_tokens: 1500
       })
     });
 
     if (r.status === 429) {
       return res.status(429).json({ error: 'The free AI limit was reached. Wait a minute and try again.' });
     }
+    if (r.status === 401) {
+      return res.status(502).json({ error: 'OpenRouter rejected the API key. Check OPENROUTER_API_KEY in Vercel.' });
+    }
     if (!r.ok) {
       const t = await r.text();
-      console.error('Gemini error', r.status, t);
-      return res.status(502).json({ error: 'The AI service returned an error (' + r.status + '). Check your API key and model name.' });
+      console.error('OpenRouter error', r.status, t);
+      return res.status(502).json({ error: 'The AI service returned an error (' + r.status + '). The free model may be busy or removed; try again, or set a different OPENROUTER_MODEL.' });
     }
 
     const data = await r.json();
-    const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
-    const reply = parts ? parts.map(p => p.text || '').join('').trim() : '';
-    if (!reply) {
+    const reply = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!reply || !String(reply).trim()) {
       return res.status(502).json({ error: 'The AI gave an empty answer. Please try again.' });
     }
-    return res.status(200).json({ reply });
+    return res.status(200).json({ reply: String(reply).trim() });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Something went wrong reaching the AI. Please try again.' });
