@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plainly — Store analytics, explained in plain English.</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom smooth transition and fade styles */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, transform;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-600 selection:text-white">
+
+    <!-- 1. Sticky Navbar -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-lg shadow-sm shadow-brand-600/30 group-hover:bg-brand-700 transition-colors">
+                    P
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Plainly</span>
+            </a>
+
+            <!-- Desktop Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                <a href="#how-it-works" class="hover:text-brand-600 transition-colors">How it works</a>
+                <a href="#example" class="hover:text-brand-600 transition-colors">Example</a>
+                <a href="#faq" class="hover:text-brand-600 transition-colors">FAQ</a>
+            </nav>
+
+            <!-- Action Button & Mobile Menu Toggle -->
+            <div class="flex items-center gap-4">
+                <a href="#waitlist" class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 shadow-sm shadow-brand-600/20 transition-all">
+                    Get your free report
+                </a>
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-600" aria-label="Toggle Menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 border-b border-slate-200 bg-white space-y-2">
+            <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50">How it works</a>
+            <a href="#example" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50">Example</a>
+            <a href="#faq" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50">FAQ</a>
+            <div class="pt-2">
+                <a href="#waitlist" class="w-full text-center block px-4 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 shadow-sm">
+                    Get your free report
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Hero Section -->
+    <section class="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32">
+        <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.brand.50),white)]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold uppercase tracking-wider mb-6 animate-pulse">
+                <span>✨ Early Access Open</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight max-w-4xl mx-auto leading-[1.15]">
+                Your store analytics, explained in <span class="text-brand-600">plain English.</span>
+            </h1>
+            <p class="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
+                Stop guessing what your numbers mean. Get a clear weekly report on what changed, why it matters, and exactly what to fix.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#waitlist" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 shadow-lg shadow-brand-600/25 transition-all transform hover:-translate-y-0.5">
+                    Get my free store report
+                </a>
+            </div>
+            <p class="mt-3 text-xs sm:text-sm text-slate-500 font-medium">
+                Free for early users. No credit card.
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. Problem Section -->
+    <section class="py-16 bg-white border-y border-slate-200 fade-in-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <h2 class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-2">The E-commerce Struggle</h2>
+                <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">You don't need another dashboard. You need answers.</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-8 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mb-6 font-semibold text-lg">
+                        📈
+                    </div>
+                    <h4 class="text-lg font-semibold text-slate-900 mb-3">Traffic is up, but sales are down</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Visitors are coming to your store, but something is stopping them from buying. Is it pricing, user experience, or mismatched traffic? Your dashboard won't tell you.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-8 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-6 font-semibold text-lg">
+                        📊
+                    </div>
+                    <h4 class="text-lg font-semibold text-slate-900 mb-3">You have dashboards, not answers</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Shopify and WooCommerce give you endless charts full of percentages and graphs. They leave you staring at raw numbers trying to guess what went wrong.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-8 hover:shadow-md transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center mb-6 font-semibold text-lg">
+                        ⏱️
+                    </div>
+                    <h4 class="text-lg font-semibold text-slate-900 mb-3">You don't have time to dig through reports</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        As a store owner, you wear twenty hats. Spending hours filtering custom date ranges and cross-referencing metrics isn't how you should spend your week.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Example Report Section -->
+    <section id="example" class="py-20 bg-slate-50 fade-in-section">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-2 block">Transparency in Action</span>
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Example report with sample data</h2>
+                <p class="mt-3 text-slate-600">Here is a sample of what lands in your inbox weekly.</p>
+            </div>
+
+            <!-- Mock Report Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                <!-- Card Header -->
+                <div class="bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-red-500 inline-block animate-ping"></span>
+                        <h3 class="font-semibold text-base">Plainly Weekly Store Insights</h3>
+                    </div>
+                    <span class="text-xs text-slate-400 font-mono">Store: Velvet & Vine (Shopify)</span>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-6 sm:p-8 space-y-6">
+                    <!-- Critical Alert Item -->
+                    <div class="p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-4">
+                        <div class="p-2 bg-red-500 text-white rounded-lg font-bold text-sm shrink-0">
+                            🚨
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-slate-900 text-lg">Sales dropped 12% this week</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Priority: High</span>
+                            </div>
+                            <p class="text-sm text-slate-600">
+                                Total revenue fell from $14,250 to $12,540 compared to last week.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Plain English Breakdown -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200/60">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">What Happened</h4>
+                            <p class="text-sm text-slate-700 leading-relaxed font-medium">
+                                Traffic actually <span class="text-emerald-600 font-bold">increased 35%</span>, but overall conversion rate fell from <span class="font-bold text-slate-900">2.8% to 1.9%</span>.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200/60">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Why It Might Have Happened</h4>
+                            <p class="text-sm text-slate-700 leading-relaxed font-medium">
+                                Most new visitors came on mobile, and mobile conversion fell the most. Mobile checkout may be losing people, or the new visitors may be less ready to buy. These are leads to check, not confirmed causes.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Actionable Investigation Box -->
+                    <div class="border-t border-slate-100 pt-6">
+                        <h4 class="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                            <span>🔍 Recommended Actions to Investigate</span>
+                        </h4>
+                        <ul class="space-y-2.5 text-sm text-slate-600">
+                            <li class="flex items-start gap-2.5">
+                                <span class="text-brand-600 font-bold mt-0.5">1.</span>
+                                <span>Check mobile product pages and checkout experience on smartphones to identify potential friction points.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="text-brand-600 font-bold mt-0.5">2.</span>
+                                <span>Review traffic sources to see if incoming visitor intent aligns with your product offerings.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+                    <span>Example report with sample data</span>
+                    <span class="font-medium text-brand-600">Weekly Report</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. How It Works -->
+    <section id="how-it-works" class="py-20 bg-white border-y border-slate-200 fade-in-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-2 block">Simple Integration</span>
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Simple to set up</h2>
+                <p class="mt-3 text-slate-600">No developer required. Safe, secure, and zero maintenance.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="relative bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                    <span class="absolute top-6 right-6 text-3xl font-extrabold text-slate-200">01</span>
+                    <h3 class="text-lg font-semibold text-slate-900 mb-2 mt-4">Connect your store</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Link your Shopify or WooCommerce store with secure, read-only permissions. We only ask for read-only access and use it to build your report.
+                    </p>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                    <span class="absolute top-6 right-6 text-3xl font-extrabold text-slate-200">02</span>
+                    <h3 class="text-lg font-semibold text-slate-900 mb-2 mt-4">We analyze your numbers</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Our AI engine parses your weekly revenue, traffic shifts, conversion rates, and product performance to identify anomalies and hidden trends.
+                    </p>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative bg-slate-50 p-8 rounded-2xl border border-slate-200">
+                    <span class="absolute top-6 right-6 text-3xl font-extrabold text-slate-200">03</span>
+                    <h3 class="text-lg font-semibold text-slate-900 mb-2 mt-4">Get your weekly report</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Receive a concise, plain-English briefing weekly ranked by business priority so you know exactly what to focus on.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Benefits Section -->
+    <section class="py-20 bg-slate-50 fade-in-section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-2 block">Built for Store Owners</span>
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Clarity without the complexity</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Benefit 1 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-brand-600 text-xl font-bold mb-3">💬</div>
+                    <h3 class="font-semibold text-slate-900 mb-1">Plain-English explanations</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Zero jargon or confusing math formulas. Just straightforward takeaways.</p>
+                </div>
+                <!-- Benefit 2 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-brand-600 text-xl font-bold mb-3">🎯</div>
+                    <h3 class="font-semibold text-slate-900 mb-1">Prioritized actions</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Know precisely what needs fixing first instead of guessing blindly.</p>
+                </div>
+                <!-- Benefit 3 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-brand-600 text-xl font-bold mb-3">🛡️</div>
+                    <h3 class="font-semibold text-slate-900 mb-1">Filters out random noise</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Ignores daily micro-fluctuations so you only focus on meaningful trends.</p>
+                </div>
+                <!-- Benefit 4 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-brand-600 text-xl font-bold mb-3">📬</div>
+                    <h3 class="font-semibold text-slate-900 mb-1">Delivered to your inbox weekly</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Right in your inbox on a regular weekly cadence before your busy days kick off.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Waitlist Form Section -->
+    <section id="waitlist" class="py-20 bg-white border-y border-slate-200 fade-in-section">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-brand-900 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
+                <!-- Background ambient glow -->
+                <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-600/30 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 text-center max-w-xl mx-auto mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Request your free early-access report</h2>
+                    <p class="mt-2 text-brand-100 text-sm">
+                        Join store owners getting clarity on their metrics. Free during early access.
+                    </p>
+                </div>
+
+                <!-- Form -->
+                <form id="waitlist-form" class="relative z-10 space-y-4 max-w-lg mx-auto">
+                    <div>
+                        <label for="email" class="block text-xs font-semibold text-brand-100 uppercase tracking-wider mb-1">Work Email</label>
+                        <input type="email" id="email" required placeholder="you@yourstore.com"
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-brand-200/60 focus:outline-none focus:ring-2 focus:ring-white text-sm">
+                    </div>
+
+                    <div>
+                        <label for="store-url" class="block text-xs font-semibold text-brand-100 uppercase tracking-wider mb-1">Store URL</label>
+                        <input type="text" id="store-url" required placeholder="yourstore.com or store.myshopify.com"
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-brand-200/60 focus:outline-none focus:ring-2 focus:ring-white text-sm">
+                    </div>
+
+                    <div>
+                        <label for="platform" class="block text-xs font-semibold text-brand-100 uppercase tracking-wider mb-1">Platform</label>
+                        <select id="platform" required
+                            class="w-full px-4 py-3 bg-slate-800 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white text-sm">
+                            <option value="" disabled selected>Select your platform</option>
+                            <option value="shopify">Shopify</option>
+                            <option value="woocommerce">WooCommerce</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Form Error Message Display -->
+                    <div id="form-error-msg" class="hidden p-3 bg-red-500/20 border border-red-500/40 rounded-xl text-xs text-red-200 text-center"></div>
+
+                    <button type="submit" id="submit-btn"
+                        class="w-full py-3.5 px-6 bg-white text-brand-900 font-semibold rounded-xl hover:bg-brand-50 transition-colors shadow-lg text-sm mt-2">
+                        Request my free report
+                    </button>
+                </form>
+
+                <!-- Success Message Box (Hidden by default) -->
+                <div id="form-success" class="hidden relative z-10 text-center py-12 space-y-4 max-w-md mx-auto">
+                    <div class="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto text-2xl font-bold shadow-lg">
+                        ✓
+                    </div>
+                    <h3 class="text-2xl font-bold">You're on the list!</h3>
+                    <p class="text-brand-100 text-sm leading-relaxed">
+                        We've received your request for <span id="success-store" class="font-semibold underline"></span>. We'll review your details and send over your free introductory store report soon.
+                    </p>
+                    <p id="preview-mode-note" class="hidden text-xs text-brand-200 italic pt-2">
+                        Preview mode: no form service is connected yet, so this request was not sent.
+                    </p>
+                    <button type="button" id="reset-form-btn" class="text-xs text-brand-200 underline hover:text-white pt-4">
+                        Submit another store
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. FAQ Section -->
+    <section id="faq" class="py-20 bg-slate-50 fade-in-section">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-2 block">Got Questions?</span>
+                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Frequently asked questions</h2>
+            </div>
+
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <details class="group bg-white rounded-xl border border-slate-200 p-6 [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between font-semibold text-slate-900 text-base">
+                        <span>Is my store data safe?</span>
+                        <span class="transition group-open:rotate-180 text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
+                    <p class="mt-4 text-sm text-slate-600 leading-relaxed">
+                        Yes. Plainly connects using read-only API access. We only ask for read-only access and use it to build your report.
+                    </p>
+                </details>
+
+                <!-- FAQ Item 2 -->
+                <details class="group bg-white rounded-xl border border-slate-200 p-6 [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between font-semibold text-slate-900 text-base">
+                        <span>Do you change anything in my store?</span>
+                        <span class="transition group-open:rotate-180 text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
+                    <p class="mt-4 text-sm text-slate-600 leading-relaxed">
+                        Never. Because our connection is strictly read-only, Plainly cannot make any edits, alter products, modify themes, or touch orders. We only read analytics data to generate your insights report.
+                    </p>
+                </details>
+
+                <!-- FAQ Item 3 -->
+                <details class="group bg-white rounded-xl border border-slate-200 p-6 [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between font-semibold text-slate-900 text-base">
+                        <span>Which e-commerce platforms are supported?</span>
+                        <span class="transition group-open:rotate-180 text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
+                    <p class="mt-4 text-sm text-slate-600 leading-relaxed">
+                        We currently support Shopify and WooCommerce stores. Additional platform integrations are coming soon based on user requests.
+                    </p>
+                </details>
+
+                <!-- FAQ Item 4 -->
+                <details class="group bg-white rounded-xl border border-slate-200 p-6 [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between font-semibold text-slate-900 text-base">
+                        <span>How much does Plainly cost?</span>
+                        <span class="transition group-open:rotate-180 text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
+                    <p class="mt-4 text-sm text-slate-600 leading-relaxed">
+                        Plainly is completely free for early access users during our preview period. We will introduce straightforward tiered pricing later, but early supporters will keep special perks.
+                    </p>
+                </details>
+
+                <!-- FAQ Item 5 -->
+                <details class="group bg-white rounded-xl border border-slate-200 p-6 [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                    <summary class="flex cursor-pointer items-center justify-between font-semibold text-slate-900 text-base">
+                        <span>Is the AI always right?</span>
+                        <span class="transition group-open:rotate-180 text-slate-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
+                    <p class="mt-4 text-sm text-slate-600 leading-relaxed">
+                        Insights are suggestions to investigate, not guaranteed causes. E-commerce has many variables, and Plainly highlights anomalies and likely drivers to help guide your investigation efficiently.
+                    </p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Footer -->
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">
+                    P
+                </div>
+                <span class="font-bold text-slate-900">Plainly</span>
+                <span class="text-xs text-slate-400 ml-2">© 2026 Plainly. All rights reserved.</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm text-slate-600 font-medium">
+                <a href="#privacy" onclick="alertBox('Privacy policy coming soon', 'Privacy')" class="hover:text-brand-600 transition-colors">Privacy</a>
+                <a href="#contact" onclick="alertBox('Contact details coming soon', 'Contact')" class="hover:text-brand-600 transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple Custom Modal/Message Box (Replaces alert()) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border border-slate-200 space-y-4">
+            <h3 id="modal-title" class="font-bold text-slate-900 text-lg">Notice</h3>
+            <p id="modal-message" class="text-sm text-slate-600 leading-relaxed"></p>
+            <button type="button" id="modal-close-btn" class="w-full py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors">
+                Got it
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript for Mobile Menu, Scroll Animations, and Form Handling -->
+    <script>
+        // Form endpoint configuration (Connect to Formspree, Tally, or custom backend here)
+        var FORM_ENDPOINT = "https://formspree.io/f/myezrlbg";
+
+        // Custom non-blocking alert box function fulfilling guidelines
+        function alertBox(message, title = "Plainly") {
+            const modal = document.getElementById('custom-modal');
+            const titleEl = document.getElementById('modal-title');
+            const msgEl = document.getElementById('modal-message');
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('modal-close-btn').addEventListener('click', () => {
+            document.getElementById('custom-modal').classList.add('hidden');
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Scroll fade-in observer
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Waitlist Form Handling with Validation and Endpoint Integration
+        const waitlistForm = document.getElementById('waitlist-form');
+        const formSuccess = document.getElementById('form-success');
+        const successStore = document.getElementById('success-store');
+        const resetFormBtn = document.getElementById('reset-form-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const formErrorMsg = document.getElementById('form-error-msg');
+        const previewModeNote = document.getElementById('preview-mode-note');
+
+        waitlistForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            formErrorMsg.classList.add('hidden');
+            formErrorMsg.textContent = '';
+
+            const email = document.getElementById('email').value.trim();
+            const storeUrl = document.getElementById('store-url').value.trim();
+            const platform = document.getElementById('platform').value;
+
+            if (!email || !storeUrl || !platform) {
+                formErrorMsg.textContent = 'Please fill out all required fields before submitting.';
+                formErrorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // If FORM_ENDPOINT is provided, send via fetch
+         if (FORM_ENDPOINT.trim() !== "") {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+
+                try {
+                    const response = await fetch(FORM_ENDPOINT, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ email, storeUrl, platform })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    // Success response received
+                    successStore.textContent = storeUrl;
+                    previewModeNote.classList.add('hidden');
+                    waitlistForm.classList.add('hidden');
+                    formSuccess.classList.remove('hidden');
+                } catch (error) {
+                    formErrorMsg.textContent = "Couldn't send your request. Check your connection and try again.";
+                    formErrorMsg.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Request my free report';
+                }
+            } else {
+                // Preview mode behavior when FORM_ENDPOINT is empty
+                successStore.textContent = storeUrl;
+                previewModeNote.classList.remove('hidden');
+                waitlistForm.classList.add('hidden');
+                formSuccess.classList.remove('hidden');
+            }
+        });
+
+        resetFormBtn.addEventListener('click', () => {
+            waitlistForm.reset();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Request my free report';
+            formErrorMsg.classList.add('hidden');
+            formSuccess.classList.add('hidden');
+            waitlistForm.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
